@@ -1,5 +1,6 @@
 
 from InstagramAPI import InstagramAPI
+import Pic_Scraper
 import os
 import time
 import requests
@@ -43,3 +44,23 @@ class Bot:
         id = req.json()
         print(id['graphql']['user']['id'])
         self.account.follow(id['graphql']['user']['id'])
+
+    def post_from_website(self, website_url, dir, amount, caption, sleep):
+
+        scraper = Pic_Scraper.Pic_Scraper()
+        scraper.scrape(website_url, dir)
+        scraper.resize(dir)
+        post_count = 0
+        for meme in os.listdir('.'):
+            if post_count < amount:
+                image = meme
+                text = caption
+                try:
+                    InstagramAPI.uploadPhoto(image, caption=text)
+                    time.sleep(sleep)
+                    post_count += 1
+                except:
+                    pass
+            else:
+                break
+
